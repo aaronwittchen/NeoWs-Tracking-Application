@@ -6,9 +6,6 @@
 [![Docker](https://github.com/aaronwittchen/NeoWs-Tracking-Application/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/aaronwittchen/NeoWs-Tracking-Application/actions/workflows/docker-publish.yml)
 [![CodeQL](https://github.com/aaronwittchen/NeoWs-Tracking-Application/actions/workflows/codeql.yml/badge.svg)](https://github.com/aaronwittchen/NeoWs-Tracking-Application/actions/workflows/codeql.yml)
 [![Coverage Status](https://img.shields.io/codecov/c/github/aaronwittchen/NeoWs-Tracking-Application?logo=codecov)](https://codecov.io/gh/aaronwittchen/NeoWs-Tracking-Application)
-[![Issues](https://img.shields.io/github/issues/aaronwittchen/NeoWs-Tracking-Application)](https://github.com/aaronwittchen/NeoWs-Tracking-Application/issues)
-[![Pull Requests](https://img.shields.io/github/issues-pr/aaronwittchen/NeoWs-Tracking-Application)](https://github.com/aaronwittchen/NeoWs-Tracking-Application/pulls)
-[![License](https://img.shields.io/github/license/aaronwittchen/NeoWs-Tracking-Application)](LICENSE)
 
 <!-- Tech Stack Badges -->
 

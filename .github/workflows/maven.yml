@@ -7,8 +7,9 @@ on:
     branches: ['main']
 
 jobs:
-  build:
+  build-neows:
     runs-on: ubuntu-latest
+    name: Build NeoWs Service
 
     steps:
       - name: Checkout code
@@ -20,5 +21,24 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Build with Maven
+      - name: Build NeoWs with Maven
+        working-directory: ./NeoWs
+        run: mvn -B clean verify
+
+  build-email-service:
+    runs-on: ubuntu-latest
+    name: Build Email Notification Service
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build Email Service with Maven
+        working-directory: ./emailnotificationservice
         run: mvn -B clean verify

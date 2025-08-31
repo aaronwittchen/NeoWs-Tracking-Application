@@ -28,8 +28,25 @@ jobs:
         with:
           languages: ${{ matrix.language }}
 
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build NeoWs
+        working-directory: ./NeoWs
+        run: mvn -B clean compile
+
+      - name: Build Email Service
+        working-directory: ./emailnotificationservice
+        run: mvn -B clean compile
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
