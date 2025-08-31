@@ -1,0 +1,10 @@
+-- Sample user data for testing
+-- This file will be automatically executed by Spring Boot during startup
+
+INSERT INTO asteroidalert.user(full_name, email, notification_enabled) VALUES
+("Tim Morris", "tm@gmail.com", 0),
+("Sarah Jensen", "sarah.jensen@example.com", 1),
+("Leo Ramirez", "leo.ramirez@example.com", 1)
+ON DUPLICATE KEY UPDATE 
+    full_name = VALUES(full_name),
+    notification_enabled = VALUES(notification_enabled);
