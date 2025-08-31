@@ -1,126 +1,172 @@
 package com.onion.emailnotificationservice.controller;
 
+import com.onion.emailnotificationservice.dto.UserDto;
+import com.onion.emailnotificationservice.dto.UserRegistrationRequest;
+import com.onion.emailnotificationservice.dto.NotificationToggleRequest;
+import com.onion.emailnotificationservice.service.UserService;
+import com.onion.emailnotificationservice.service.EmailService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.onion.emailnotificationservice.entity.User;
-import com.onion.emailnotificationservice.repository.UserRepository;
-
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 @Slf4j
+@Tag(name = "User Management", description = "APIs for managing users and notification preferences")
 public class UserController {
 
-    private final UserRepository userRepository;
-
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final UserService userService;
+    private final EmailService emailService;
 
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody UserRegistrationRequest request) {
+    @Operation(
+        summary = "Register a new user",
+        description = "Creates a new user account with default notifications disabled"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "User created successfully",
+            content = @Content(schema = @Schema(implementation = UserDto.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid input data"),
+        @ApiResponse(responseCode = "409", description = "User with email already exists"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<UserDto> createUser(
+            @Valid @RequestBody UserRegistrationRequest request) {
+        log.info("Received user registration request for email: {}", request.getEmail());
+        
         try {
-            log.info("Received user registration request for email: {}", request.getEmail());
-
-            // Validate request
-            if (request.getFullName() == null || request.getFullName().trim().isEmpty()) {
-                return ResponseEntity.badRequest().body(new ErrorResponse("Full name is required"));
-            }
-
-            if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
-                return ResponseEntity.badRequest().body(new ErrorResponse("Email is required"));
-            }
-
-            // Check if user already exists
-            List<User> existingUsers = userRepository.findByEmail(request.getEmail());
-            if (!existingUsers.isEmpty()) {
-                log.warn("User registration failed - email already exists: {}", request.getEmail());
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ErrorResponse("A user with this email already exists"));
-            }
-
-            // Create new user
-            User user = User.builder()
-                .fullName(request.getFullName().trim())
-                .email(request.getEmail().trim().toLowerCase())
-                .notificationEnabled(request.isNotificationEnabled())
-                .build();
-
-            User savedUser = userRepository.save(user);
-            log.info("User registered successfully: {}", savedUser.getEmail());
-
-            return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new UserResponse(savedUser.getId(), savedUser.getFullName(), 
-                                     savedUser.getEmail(), savedUser.isNotificationEnabled()));
-
-        } catch (Exception e) {
-            log.error("Error creating user: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("An error occurred while creating the user"));
+            UserDto createdUser = userService.createUser(request);
+            log.info("User registered successfully: {}", createdUser.getEmail());
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+        } catch (IllegalArgumentException e) {
+            log.warn("User registration failed: {}", e.getMessage());
+            throw e;
         }
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
+    @Operation(
+        summary = "Get all users",
+        description = "Retrieves a list of all registered users"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Users retrieved successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        log.info("Fetching all users");
+        List<UserDto> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/{id}")
+    @Operation(
+        summary = "Get user by ID",
+        description = "Retrieves a specific user by their ID"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "User found"),
+        @ApiResponse(responseCode = "404", description = "User not found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<UserDto> getUserById(
+            @Parameter(description = "User ID") @PathVariable Long id) {
+        log.info("Fetching user with ID: {}", id);
+        
+        return userService.getUserById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/notifications-enabled")
+    @Operation(
+        summary = "Get users with notifications enabled",
+        description = "Retrieves a list of users who have notifications enabled"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Users retrieved successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<List<UserDto>> getUsersWithNotificationsEnabled() {
+        log.info("Fetching users with notifications enabled");
+        List<UserDto> users = userService.getUsersWithNotificationsEnabled();
+        return ResponseEntity.ok(users);
+    }
+
+    @PutMapping("/{id}/notification")
+    @Operation(
+        summary = "Update notification preference",
+        description = "Updates a user's notification preference (enabled/disabled)"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Notification preference updated successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid input data"),
+        @ApiResponse(responseCode = "404", description = "User not found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<UserDto> updateNotificationPreference(
+            @Parameter(description = "User ID") @PathVariable Long id,
+            @Valid @RequestBody NotificationToggleRequest request) {
+        log.info("Updating notification preference for user ID: {} to: {}", id, request.isNotificationEnabled());
+        
         try {
-            List<User> users = userRepository.findAll();
-            return ResponseEntity.ok(users);
-        } catch (Exception e) {
-            log.error("Error fetching users: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            UserDto updatedUser = userService.updateNotificationPreference(id, request);
+            return ResponseEntity.ok(updatedUser);
+        } catch (IllegalArgumentException e) {
+            log.warn("Failed to update notification preference: {}", e.getMessage());
+            throw e;
         }
     }
 
-    // Request/Response DTOs
-    public static class UserRegistrationRequest {
-        private String fullName;
-        private String email;
-        private boolean notificationEnabled = true;
+    @PostMapping("/send-alerts")
+    @Operation(
+        summary = "Send NASA Asteroid Alert emails",
+        description = "Triggers sending NASA Asteroid Alert emails to all users with notifications enabled."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "202", description = "Email sending triggered successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<String> sendAsteroidAlerts() {
+        log.info("Triggering NASA Asteroid Alert emails to all notification-enabled users");
+        emailService.sendAsteroidAlertEmail();
+        return ResponseEntity.accepted().body("NASA Asteroid Alert emails are being sent to all notification-enabled users.");
+    }
 
-        // Getters and Setters
-        public String getFullName() { return fullName; }
-        public void setFullName(String fullName) { this.fullName = fullName; }
+    @DeleteMapping("/{id}")
+    @Operation(
+        summary = "Delete user",
+        description = "Deletes a user account"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "User deleted successfully"),
+        @ApiResponse(responseCode = "404", description = "User not found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<Void> deleteUser(
+            @Parameter(description = "User ID") @PathVariable Long id) {
+        log.info("Deleting user with ID: {}", id);
         
-        public String getEmail() { return email; }
-        public void setEmail(String email) { this.email = email; }
-        
-        public boolean isNotificationEnabled() { return notificationEnabled; }
-        public void setNotificationEnabled(boolean notificationEnabled) { this.notificationEnabled = notificationEnabled; }
-    }
-
-    public static class UserResponse {
-        private Long id;
-        private String fullName;
-        private String email;
-        private boolean notificationEnabled;
-
-        public UserResponse(Long id, String fullName, String email, boolean notificationEnabled) {
-            this.id = id;
-            this.fullName = fullName;
-            this.email = email;
-            this.notificationEnabled = notificationEnabled;
+        try {
+            userService.deleteUser(id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            log.warn("Failed to delete user: {}", e.getMessage());
+            throw e;
         }
-
-        // Getters
-        public Long getId() { return id; }
-        public String getFullName() { return fullName; }
-        public String getEmail() { return email; }
-        public boolean isNotificationEnabled() { return notificationEnabled; }
-    }
-
-    public static class ErrorResponse {
-        private String message;
-
-        public ErrorResponse(String message) {
-            this.message = message;
-        }
-
-        public String getMessage() { return message; }
     }
 } 

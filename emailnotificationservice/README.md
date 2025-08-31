@@ -1,264 +1,158 @@
-# NASA Asteroid Alert System
+# Email Notification Service
 
-A comprehensive system for monitoring potentially hazardous asteroids and sending email alerts to registered users.
+A Spring Boot microservice that manages user registrations, consumes asteroid alerts from Kafka, and sends email notifications about potentially hazardous asteroids.
 
-## 🚀 Features
+## Purpose
 
-### Backend (Spring Boot)
-- **Kafka Integration**: Consumes asteroid collision events from Kafka topics
-- **Email Service**: Sends beautiful HTML emails with asteroid alerts and NASA APOD
-- **User Management**: REST API for user registration and management
-- **Database**: MySQL integration with JPA/Hibernate
-- **Error Handling**: Robust error handling with retry mechanisms
-- **Scheduling**: Automated email sending every 10 seconds
+* User registration & management
+* Notification preference handling
+* Consume asteroid alerts from Kafka (`asteroid-alert`)
+* Send HTML email notifications via SMTP
+* Persist users & notifications in MySQL
 
-### Frontend (Angular)
-- **User Registration**: Modern, responsive registration form
-- **Form Validation**: Real-time validation with error messages
-- **Beautiful UI**: Gradient backgrounds and smooth animations
-- **Responsive Design**: Works on desktop, tablet, and mobile
+## Architecture
 
-## 📋 Prerequisites
+### Components
 
-- Java 17+
-- Node.js 16+
-- MySQL 8.0+
-- Docker (for Kafka setup)
+* **UserController** → REST API for user CRUD + preferences
+* **UserService** → Business logic + validation
+* **NotificationService** → Kafka consumer + scheduled email processing
+* **EmailService** → SMTP integration + HTML template emails
 
-## 🛠️ Setup Instructions
+### Infrastructure
 
-### 1. Database Setup
+* **Kafka** for alert events
+* **MySQL** for persistence
+* **SMTP** (MailTrap for dev, real SMTP for prod)
 
-Create a MySQL database named `asteroidalert`:
+## Features
 
-```sql
-CREATE DATABASE asteroidalert;
-```
+* User CRUD (with email uniqueness validation)
+* Enable/disable notification preferences
+* HTML email alerts (scheduled every 10s or manual trigger)
+* Kafka event consumption with error handling
+* Audit history of notifications
 
-### 2. Environment Variables
+## Prerequisites
 
-Create a `.env` file in the root directory:
+* Java 21+
+* Maven
+* MySQL 8+ (local or Docker)
+* Kafka (via Docker Compose)
+* SMTP credentials (MailTrap or production)
 
-```env
-# Database
-DB_USERNAME=your_mysql_username
-DB_PASSWORD=your_mysql_password
-MYSQL_ROOT_PASSWORD=your_mysql_root_password
+## Quick Start
 
-# Email (Mailtrap)
-MAILTRAP_USERNAME=your_mailtrap_username
-MAILTRAP_PASSWORD=your_mailtrap_password
-MAIL_FROM_EMAIL=noreply@nasa-asteroid-alerts.com
+1. **Setup Environment**
 
-# NASA API (Optional)
-NASA_API_KEY=your_nasa_api_key
-```
+   ```bash
+   cp env.template .env
+   # Update with DB, SMTP, and NASA_API_KEY
+   ```
 
-### 3. Start Infrastructure
+2. **Start MySQL (Docker)**
 
-Start Kafka, MySQL, and other services using Docker Compose:
+   ```bash
+   docker run -d --name mysql-asteroid \
+     -e MYSQL_ROOT_PASSWORD=rootpassword \
+     -e MYSQL_DATABASE=asteroidalert \
+     -e MYSQL_USER=asteroiduser \
+     -e MYSQL_PASSWORD=asteroidpass \
+     -p 3306:3306 mysql:8.0
+   ```
 
-```bash
-docker-compose up -d
-```
+3. **Run Service**
 
-### 4. Backend Setup
+   ```bash
+   ./mvnw spring-boot:run
+   ```
 
-1. Navigate to the Spring Boot project directory:
-```bash
-cd emailnotificationservice
-```
+4. **Test**
 
-2. Build and run the application:
-```bash
-./mvnw spring-boot:run
-```
+   ```bash
+   # Register user
+   curl -X POST http://localhost:8082/api/users \
+     -H "Content-Type: application/json" \
+     -d '{"fullName":"John Doe","email":"john@example.com"}'
 
-The backend will start on `http://localhost:8081`
+   # Enable notifications
+   curl -X PUT http://localhost:8082/api/users/1/notification \
+     -H "Content-Type: application/json" \
+     -d '{"notificationEnabled":true}'
+   ```
 
-### 5. Frontend Setup
+## API Endpoints
 
-1. Navigate to the Angular project directory:
-```bash
-cd angular-user-registration
-```
+* `POST /api/users` → Register user
+* `GET /api/users` → List all users
+* `GET /api/users/{id}` → Get user by ID
+* `PUT /api/users/{id}/notification` → Toggle notifications
+* `DELETE /api/users/{id}` → Delete user
+* `POST /api/users/send-alerts` → Manually send emails
+* Swagger UI: `http://localhost:8082/swagger-ui.html`
 
-2. Install dependencies:
-```bash
-npm install
-```
+## Configuration
 
-3. Start the development server:
-```bash
-npm start
-```
+**application.properties**
 
-The frontend will start on `http://localhost:4200`
-
-## 📊 API Endpoints
-
-### User Registration
-- **POST** `/api/users` - Register a new user
-- **GET** `/api/users` - Get all users
-
-### Request Format
-```json
-{
-  "fullName": "John Doe",
-  "email": "john.doe@example.com",
-  "notificationEnabled": true
-}
-```
-
-## 🎨 Frontend Features
-
-### User Registration Form
-- **First Name**: Required, minimum 2 characters
-- **Last Name**: Required, minimum 2 characters
-- **Email**: Required, valid email format
-- **Notifications**: Toggle to enable/disable email alerts
-
-### UI/UX Features
-- ✅ **Real-time validation**
-- ✅ **Beautiful gradient design**
-- ✅ **Responsive layout**
-- ✅ **Smooth animations**
-- ✅ **Error handling**
-- ✅ **Success feedback**
-
-## 📧 Email Features
-
-### HTML Email Template
-- **Asteroid Alerts**: Detailed information about detected asteroids
-- **Risk Assessment**: Color-coded risk levels (🔴 HIGH, 🟡 MEDIUM, 🟢 LOW)
-- **NASA APOD**: Daily astronomy picture with explanation
-- **Responsive Design**: Works on all email clients
-
-### Email Content
-- Asteroid name and details
-- Close approach date
-- Estimated diameter
-- Miss distance
-- Risk level assessment
-- NASA's Astronomy Picture of the Day
-
-## 🔧 Configuration
-
-### Application Properties
 ```properties
-# Server
-server.port=8081
-
-# Database
 spring.datasource.url=jdbc:mysql://localhost:3306/asteroidalert
 spring.datasource.username=${DB_USERNAME}
 spring.datasource.password=${DB_PASSWORD}
+spring.jpa.hibernate.ddl-auto=update
 
-# Kafka
 spring.kafka.bootstrap-servers=localhost:9092
-spring.kafka.consumer.group-id=asteroid-alert
+spring.kafka.consumer.group-id=notification-service
 
-# Email
-spring.mail.host=sandbox.smtp.mailtrap.io
-spring.mail.port=2525
-spring.mail.username=${MAILTRAP_USERNAME}
-spring.mail.password=${MAILTRAP_PASSWORD}
-
-# NASA API
-nasa.api.key=${NASA_API_KEY:DEMO_KEY}
+spring.mail.host=${SPRING_MAIL_HOST:sandbox.smtp.mailtrap.io}
+spring.mail.port=${SPRING_MAIL_PORT:2525}
+spring.mail.username=${SPRING_MAIL_USERNAME}
+spring.mail.password=${SPRING_MAIL_PASSWORD}
 ```
 
-## 🚨 Error Handling
+**Environment Variables**
 
-### Backend
-- **Retry Logic**: 3 attempts with exponential backoff for email sending
-- **Graceful Degradation**: Continues working if APOD API fails
-- **Data Validation**: Comprehensive input validation
-- **Logging**: Detailed logging for debugging
+* `DB_USERNAME`, `DB_PASSWORD` (MySQL)
+* `SPRING_MAIL_HOST`, `SPRING_MAIL_USERNAME`, `SPRING_MAIL_PASSWORD` (SMTP)
+* `MAIL_FROM_EMAIL` (sender address)
 
-### Frontend
-- **Form Validation**: Real-time validation with helpful error messages
-- **Network Error Handling**: Graceful handling of API failures
-- **User Feedback**: Clear success/error messages
+## Workflow
 
-## 📱 Responsive Design
+1. User registers via API → stored in MySQL
+2. Kafka publishes asteroid alert → consumed by service
+3. Event validated & stored as notification
+4. Scheduled job (every 10s) fetches pending notifications
+5. HTML emails sent to opted-in users
 
-The Angular application is fully responsive:
-- **Desktop**: Full-width layout with optimal spacing
-- **Tablet**: Adjusted padding and font sizes
-- **Mobile**: Single-column layout with touch-friendly elements
+## Monitoring
 
-## 🔒 Security Features
+* Actuator: `http://localhost:8082/actuator/health`
+* Swagger: `http://localhost:8082/swagger-ui.html`
+* Kafka UI (via Docker Compose)
+* Logs: console + structured output
 
-- **HTML Escaping**: Prevents XSS attacks in email content
-- **Input Validation**: Server-side validation of all inputs
-- **CORS Configuration**: Proper CORS setup for frontend-backend communication
+## Development
 
-## 🧪 Testing
-
-### Backend Testing
 ```bash
-./mvnw test
+./mvnw clean package   # Build
+./mvnw test            # Run tests
+./mvnw spring-boot:run # Run locally
 ```
 
-### Frontend Testing
-```bash
-cd angular-user-registration
-npm test
+**Code Structure**
+
+```
+controller/   # REST endpoints
+service/      # Business logic
+entity/       # JPA entities
+repository/   # Data access
+dto/          # Transfer objects
+config/       # Config classes
+exception/    # Custom exceptions
 ```
 
-## 📈 Monitoring
+## Integration
 
-### Logs
-The application provides detailed logging:
-- Email sending status
-- User registration events
-- Error tracking
-- Performance metrics
-
-### Metrics
-- Email success/failure rates
-- User registration counts
-- API response times
-
-## 🚀 Deployment
-
-### Backend Deployment
-1. Build the JAR file:
-```bash
-./mvnw clean package
-```
-
-2. Run the application:
-```bash
-java -jar target/emailnotificationservice-0.0.1-SNAPSHOT.jar
-```
-
-### Frontend Deployment
-1. Build the production version:
-```bash
-cd angular-user-registration
-npm run build
-```
-
-2. Deploy the `dist` folder to your web server
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 🆘 Support
-
-For support, please open an issue in the GitHub repository or contact the development team.
-
----
-
-**Note**: This system is designed for educational and demonstration purposes. For production use, additional security measures and monitoring should be implemented. 
+* **Upstream**: NeoWs Service (publishes asteroid events)
+* **Infra**: Kafka, MySQL, SMTP
+* **Downstream**: Email clients (users receive alerts)

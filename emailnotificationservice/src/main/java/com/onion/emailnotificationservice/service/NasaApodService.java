@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NasaApodService {
 
-    @Value("${nasa.api.key:DEMO_KEY}")
+    @Value("${nasa.api.key}")
     private String apiKey;
 
     private final RestTemplate restTemplate;
