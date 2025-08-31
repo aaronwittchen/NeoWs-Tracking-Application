@@ -1,6 +1,28 @@
 # NeoWs Tracking Application
 
-A **Near-Earth Object (NEO) monitoring and alerting system** built with Spring Boot. It tracks potentially hazardous asteroids using NASA's NeoWs API and sends real-time email notifications.
+<!-- GitHub Workflow & NeoWs-Tracking-Application Badges -->
+
+[![Build](https://github.com/aaronwittchen/NeoWs-Tracking-Application/actions/workflows/maven.yml/badge.svg)](https://github.com/aaronwittchen/NeoWs-Tracking-Application/actions/workflows/maven.yml)
+[![Docker](https://github.com/aaronwittchen/NeoWs-Tracking-Application/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/aaronwittchen/NeoWs-Tracking-Application/actions/workflows/docker-publish.yml)
+[![CodeQL](https://github.com/aaronwittchen/NeoWs-Tracking-Application/actions/workflows/codeql.yml/badge.svg)](https://github.com/aaronwittchen/NeoWs-Tracking-Application/actions/workflows/codeql.yml)
+[![Coverage Status](https://img.shields.io/codecov/c/github/aaronwittchen/NeoWs-Tracking-Application?logo=codecov)](https://codecov.io/gh/aaronwittchen/NeoWs-Tracking-Application)
+[![Issues](https://img.shields.io/github/issues/aaronwittchen/NeoWs-Tracking-Application)](https://github.com/aaronwittchen/NeoWs-Tracking-Application/issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/aaronwittchen/NeoWs-Tracking-Application)](https://github.com/aaronwittchen/NeoWs-Tracking-Application/pulls)
+[![License](https://img.shields.io/github/license/aaronwittchen/NeoWs-Tracking-Application)](LICENSE)
+
+<!-- Tech Stack Badges -->
+
+[![Java](https://img.shields.io/badge/Java-21-blue?logo=openjdk)](https://openjdk.org/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen?logo=springboot)](https://spring.io/projects/spring-boot)
+[![Apache Kafka](https://img.shields.io/badge/Kafka-Event%20Streaming-black?logo=apachekafka)](https://kafka.apache.org/)
+[![MySQL](https://img.shields.io/badge/MySQL-DB-blue?logo=mysql)](https://www.mysql.com/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-blue?logo=docker)](https://www.docker.com/)
+[![Swagger](https://img.shields.io/badge/API-OpenAPI%2FSwagger-orange?logo=swagger)](https://swagger.io/)
+
+---
+
+A **Near-Earth Object (NEO) monitoring and alerting system** built with Spring Boot.  
+It tracks potentially hazardous asteroids using NASA's NeoWs API and sends real-time email notifications.
 
 ## Features
 
