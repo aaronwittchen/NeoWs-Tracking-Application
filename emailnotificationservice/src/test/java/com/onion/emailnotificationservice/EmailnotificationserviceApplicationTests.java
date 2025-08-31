@@ -1,6 +1,7 @@
 package com.onion.emailnotificationservice;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -19,40 +20,42 @@ import com.onion.emailnotificationservice.service.NotificationProcessor;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@EnableAutoConfiguration(exclude = {
+        org.springframework.boot.actuate.autoconfigure.mail.MailHealthContributorAutoConfiguration.class
+})
 class EmailnotificationserviceApplicationTests {
 
-	@MockBean
-	private KafkaTemplate<String, AsteroidCollisionEvent> kafkaTemplate;
+    @MockBean
+    private KafkaTemplate<String, AsteroidCollisionEvent> kafkaTemplate;
 
-	@MockBean
-	private EmailService emailService;
+    @MockBean
+    private EmailService emailService;
 
-	@MockBean
-	private UserRepository userRepository;
+    @MockBean
+    private UserRepository userRepository;
 
-	@MockBean
-	private NotificationRepository notificationRepository;
+    @MockBean
+    private NotificationRepository notificationRepository;
 
-	@MockBean
-	private NotificationProcessor notificationProcessor;
+    @MockBean
+    private NotificationProcessor notificationProcessor;
 
-	@MockBean
-	private EmailContentBuilder emailContentBuilder;
+    @MockBean
+    private EmailContentBuilder emailContentBuilder;
 
-	@MockBean
-	private EmailSenderService emailSenderService;
+    @MockBean
+    private EmailSenderService emailSenderService;
 
-	@MockBean
-	private JavaMailSender javaMailSender;
+    @MockBean
+    private JavaMailSender javaMailSender;
 
-	@MockBean
-	private NasaApodService nasaApodService;
+    @MockBean
+    private NasaApodService nasaApodService;
 
-	@MockBean
-	private RestTemplate restTemplate;
+    @MockBean
+    private RestTemplate restTemplate;
 
-	@Test
-	void contextLoads() {
-	}
-
+    @Test
+    void contextLoads() {
+    }
 }
