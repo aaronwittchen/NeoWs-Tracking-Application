@@ -6,21 +6,21 @@ A **Near-Earth Object (NEO) monitoring and alerting system** built with Spring B
 
 ### Core
 
-* Real-time asteroid monitoring (NASA NeoWs API)
-* Hazardous asteroid detection
-* Event-driven architecture with Kafka
-* Email alerts for registered users
-* User management & preferences
-* Health checks and monitoring
+- Real-time asteroid monitoring (NASA NeoWs API)
+- Hazardous asteroid detection
+- Event-driven architecture with Kafka
+- Email alerts for registered users
+- User management & preferences
+- Health checks and monitoring
 
 ### Technical
 
-* Microservices architecture (Asteroid & Email services)
-* Kafka-based asynchronous processing
-* MySQL persistence (users, notifications)
-* REST APIs with OpenAPI/Swagger docs
-* Scheduled monitoring & alerting
-* Robust error handling/logging
+- Microservices architecture (Asteroid & Email services)
+- Kafka-based asynchronous processing
+- MySQL persistence (users, notifications)
+- REST APIs with OpenAPI/Swagger docs
+- Scheduled monitoring & alerting
+- Robust error handling/logging
 
 ## Architecture
 
@@ -28,37 +28,37 @@ A **Near-Earth Object (NEO) monitoring and alerting system** built with Spring B
 
 **1. NeoWs Service (8080)**
 
-* Fetches asteroid data, detects hazards, publishes alerts
-* Components: `AlertController`, `AlertService`, `NasaClient`, Kafka producer
+- Fetches asteroid data, detects hazards, publishes alerts
+- Components: `AlertController`, `AlertService`, `NasaClient`, Kafka producer
 
 **2. Email Notification Service (8082)**
 
-* Consumes alerts, manages users, sends emails
-* Components: `UserController`, `NotificationService`, `EmailService`, `UserService`
+- Consumes alerts, manages users, sends emails
+- Components: `UserController`, `NotificationService`, `EmailService`, `UserService`
 
 ### Infrastructure
 
-* Apache Kafka for events
-* MySQL for persistence
-* Kafka UI (8084) for monitoring
+- Apache Kafka for events
+- MySQL for persistence
+- Kafka UI (8084) for monitoring
 
 ## Tech Stack
 
-* Java 21, Spring Boot 3.x
-* Spring Data JPA, MySQL
-* Apache Kafka
-* Java Mail Sender
-* Docker Compose
-* Lombok
-* OpenAPI/Swagger
+- Java 21, Spring Boot 3.x
+- Spring Data JPA, MySQL
+- Apache Kafka
+- Java Mail Sender
+- Docker Compose
+- Lombok
+- OpenAPI/Swagger
 
 ## Prerequisites
 
-* Java 21+
-* Docker & Docker Compose
-* NASA API Key ([https://api.nasa.gov/](https://api.nasa.gov/))
-* MySQL or Dockerized DB
-* Email credentials (MailTrap/SMTP)
+- Java 21+
+- Docker & Docker Compose
+- NASA API Key ([https://api.nasa.gov/](https://api.nasa.gov/))
+- MySQL or Dockerized DB
+- Email credentials (MailTrap/SMTP)
 
 ## Quick Start
 
@@ -71,7 +71,7 @@ A **Near-Earth Object (NEO) monitoring and alerting system** built with Spring B
 
 2. **Configure Variables**
 
-   * `NASA_API_KEY`, DB creds, SMTP creds
+   - `NASA_API_KEY`, DB creds, SMTP creds
 
 3. **Start Infrastructure**
 
@@ -101,19 +101,19 @@ A **Near-Earth Object (NEO) monitoring and alerting system** built with Spring B
 
 **NeoWs Service (8080)**
 
-* `GET /api/v1/asteroid-alerts/health`
-* `POST /api/v1/asteroid-alerts/alert`
-* Swagger: `/swagger-ui.html`
+- `GET /api/v1/asteroid-alerts/health`
+- `POST /api/v1/asteroid-alerts/alert`
+- Swagger: `/swagger-ui.html`
 
 **Email Service (8082)**
 
-* `POST /api/users` (register)
-* `GET /api/users` (list)
-* `GET /api/users/{id}`
-* `PUT /api/users/{id}/notification`
-* `POST /api/users/send-alerts`
-* `DELETE /api/users/{id}`
-* Swagger: `/swagger-ui.html`
+- `POST /api/users` (register)
+- `GET /api/users` (list)
+- `GET /api/users/{id}`
+- `PUT /api/users/{id}/notification`
+- `POST /api/users/send-alerts`
+- `DELETE /api/users/{id}`
+- Swagger: `/swagger-ui.html`
 
 ## Workflow
 
@@ -125,24 +125,25 @@ A **Near-Earth Object (NEO) monitoring and alerting system** built with Spring B
 
 ## Monitoring
 
-* Kafka UI: [http://localhost:8084](http://localhost:8084)
-* Health checks:
+- Kafka UI: [http://localhost:8084](http://localhost:8084)
+- Health checks:
 
-  * NeoWs: [http://localhost:8080/api/v1/asteroid-alerts/health](http://localhost:8080/api/v1/asteroid-alerts/health)
-  * Email: [http://localhost:8082/actuator/health](http://localhost:8082/actuator/health)
-* Logs: console + Kafka topic inspection
+  - NeoWs: [http://localhost:8080/api/v1/asteroid-alerts/health](http://localhost:8080/api/v1/asteroid-alerts/health)
+  - Email: [http://localhost:8082/actuator/health](http://localhost:8082/actuator/health)
+
+- Logs: console + Kafka topic inspection
 
 ## Configuration
 
-* NASA API: `https://api.nasa.gov/neo/rest/v1/feed` (7-day range, 1000 req/hr free tier)
-* Kafka: `localhost:9092`, topic `asteroid-alert`
-* Email: MailTrap/SMTP, scheduled \~10s (configurable)
+- NASA API: `https://api.nasa.gov/neo/rest/v1/feed` (7-day range, 1000 req/hr free tier)
+- Kafka: `localhost:9092`, topic `asteroid-alert`
+- Email: MailTrap/SMTP, scheduled \~10s (configurable)
 
 ## Troubleshooting
 
-* Invalid NASA API key → update `.env`
-* Kafka issues → check container status and UI
-* DB issues → verify MySQL creds
-* Email failures → check SMTP settings/network
+- Invalid NASA API key → update `.env`
+- Kafka issues → check container status and UI
+- DB issues → verify MySQL creds
+- Email failures → check SMTP settings/network
 
 Logs and Kafka UI are primary debugging tools.
