@@ -23,6 +23,8 @@ jobs:
 
       - name: Build NeoWs with Maven
         working-directory: ./NeoWs
+        env:
+          NASA_API_KEY: test-api-key
         run: mvn -B clean verify
 
   build-email-service:
@@ -41,4 +43,13 @@ jobs:
 
       - name: Build Email Service with Maven
         working-directory: ./emailnotificationservice
+        env:
+          NASA_API_KEY: test-api-key
+          DB_USERNAME: test-user
+          DB_PASSWORD: test-password
+          SPRING_MAIL_HOST: localhost
+          SPRING_MAIL_PORT: 1025
+          SPRING_MAIL_USERNAME: test@example.com
+          SPRING_MAIL_PASSWORD: test-password
+          MAIL_FROM_EMAIL: test@example.com
         run: mvn -B clean verify
