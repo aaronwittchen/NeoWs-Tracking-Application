@@ -22,9 +22,6 @@ A **Near-Earth Object (NEO) monitoring and alerting system** built with Spring B
 It tracks potentially hazardous asteroids using NASA's NeoWs API and sends real-time email notifications.
 
 ![NeoWs Architecture Diagram](public/NeoWs%20Architecture%20Diagram.png)
-![1](public/1.png)
-![2](public/2.png)
-![3](public/3.png)
 
 ## Features
 
@@ -171,3 +168,9 @@ It tracks potentially hazardous asteroids using NASA's NeoWs API and sends real-
 - Email failures → check SMTP settings/network
 
 Logs and Kafka UI are primary debugging tools.
+
+## Email Template
+
+![1](public/1.png)
+![2](public/2.png)
+![3](public/3.png)
