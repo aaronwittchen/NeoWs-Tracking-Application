@@ -21,6 +21,11 @@
 A **Near-Earth Object (NEO) monitoring and alerting system** built with Spring Boot.  
 It tracks potentially hazardous asteroids using NASA's NeoWs API and sends real-time email notifications.
 
+![NeoWs Architecture Diagram](public/NeoWs%20Architecture%20Diagram.png)
+![1](public/1.png)
+![2](public/2.png)
+![3](public/3.png)
+
 ## Features
 
 ### Core
