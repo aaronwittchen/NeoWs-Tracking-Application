@@ -28,24 +28,28 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-m2-
 
+      # NeoWs service
       - name: Build and test NeoWs service
         working-directory: ./NeoWs
-        run: mvn clean verify
+        run: mvn clean verify jacoco:report
 
+      # Email Notification service
       - name: Build and test Email Notification service
         working-directory: ./emailnotificationservice
-        run: mvn clean verify
+        run: mvn clean verify jacoco:report
 
+      # Upload NeoWs coverage to Codecov
       - name: Upload NeoWs coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./NeoWs/target/site/jacoco/
+          files: ./NeoWs/target/site/jacoco/jacoco.xml
           fail_ci_if_error: true
 
+      # Upload Email Notification coverage to Codecov
       - name: Upload Email Notification coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./emailnotificationservice/target/site/jacoco/
+          files: ./emailnotificationservice/target/site/jacoco/jacoco.xml
           fail_ci_if_error: true
