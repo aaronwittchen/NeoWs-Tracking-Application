@@ -85,6 +85,10 @@
 - [ ] Code Quality & Static Analysis
 - [ ] Documentation & Style Guides
 - [ ] CI/CD Automated Testing
+  - Controllers (@WebMvcTest)
+  - Services (@ExtendWith(MockitoExtension.class))
+  - Repositories (@DataJpaTest)
+  - Integration tests (@SpringBootTest)
 
 ## DevOps & Deployment
 
