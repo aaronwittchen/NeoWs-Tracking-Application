@@ -59,7 +59,7 @@ public class EmailTemplate {
         htmlContent.append("</div>");
         htmlContent.append("<div class=\"content\">");
         htmlContent.append("<div class=\"intro\">");
-        htmlContent.append("Hello ").append(userName != null ? userName : "Space Enthusiast")
+        htmlContent.append("Hello ").append(userName != null ? userName : "Space Enthusiast");
         htmlContent.append("! This week we're tracking several interesting objects making close approaches to Earth. ");
         htmlContent.append("While none pose any immediate threat, they provide valuable opportunities for scientific observation.");
         htmlContent.append("</div>");
