@@ -79,6 +79,9 @@ It tracks potentially hazardous asteroids using NASA's NeoWs API and sends real-
 1. **Setup Environment**
 
    ```bash
+   git clone https://github.com/aaronwittchen/Sorting-Visualization-Tool.git
+   cd Sorting-Visualization-Tool
+   
    cp NeoWs/env.template NeoWs/.env
    cp emailnotificationservice/env.template emailnotificationservice/.env
    ```
